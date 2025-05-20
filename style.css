@@ -71,3 +71,18 @@ label {
 #clearButton:hover {
     background-color: #c82333;
 }
+
+
+/* 기존 CSS 내용 아래에 추가 */
+
+h1 #overallProgress,
+h2 .section-progress {
+    font-size: 0.8em; /* 부모 글씨보다 약간 작게 */
+    color: #007bff; /* 파란색 계열 */
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+h2 .section-progress.done { /* DONE 텍스트 스타일 */
+    color: #28a745; /* 초록색 */
+}
