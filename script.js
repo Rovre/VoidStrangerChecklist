@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 마스터 체크리스트 섹션만 따로 가져옴
     const masterChecklistSection = document.getElementById('masterChecklistSection');
     // 실제 게임 진행도와 관련된 하위 섹션들 (마스터 섹션 제외)
-    // masterChecklistSection의 자식 체크박스 ID가 'master_SECTIONID' 형식이라고 가정
     const gameChecklistSections = Array.from(allChecklistSections).filter(section => section.id !== 'masterChecklistSection');
 
     // 1. 페이지 로드 시 저장된 상태 불러오기
@@ -16,7 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const savedProgress = localStorage.getItem(storageKey);
         if (savedProgress) {
             const progress = JSON.parse(savedProgress);
-            allChecklistSections.forEach(section => {
+            // 실제 게임 진행도 섹션의 체크박스만 로드
+            gameChecklistSections.forEach(section => {
                 const checkboxes = section.querySelectorAll('input[type="checkbox"]');
                 checkboxes.forEach(checkbox => {
                     if (progress[checkbox.id] !== undefined) {
@@ -32,7 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. 현재 체크 상태 저장하기 (그리고 모든 진행도 업데이트)
     function saveProgress() {
         const progress = {};
-        allChecklistSections.forEach(section => {
+        // 실제 게임 진행도 섹션의 체크박스만 저장
+        gameChecklistSections.forEach(section => {
             const checkboxes = section.querySelectorAll('input[type="checkbox"]');
             checkboxes.forEach(checkbox => {
                 progress[checkbox.id] = checkbox.checked;
@@ -87,15 +88,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 6. 마스터 체크리스트 내의 각 하위 섹션 진행도를 업데이트
     function updateMasterChecklistProgress() {
-        const masterListItems = masterChecklistSection.querySelectorAll('ul.section-checklist > li');
+        const masterLinks = masterChecklistSection.querySelectorAll('.master-section-link');
 
-        masterListItems.forEach(listItem => {
-            const masterCheckbox = listItem.querySelector('input[type="checkbox"]');
-            const progressSpan = listItem.querySelector('.section-master-progress'); // 이 span을 업데이트
+        masterLinks.forEach(link => {
+            const progressSpan = link.querySelector('.section-master-progress'); // 이 span을 업데이트
 
-            if (masterCheckbox && progressSpan) {
-                // master_ 접두사를 제거하여 실제 하위 섹션 ID를 얻음
-                const subSectionId = masterCheckbox.id.replace('master_', '');
+            if (progressSpan) {
+                // href 속성에서 섹션 ID를 얻음 (예: #addsDomain -> addsDomain)
+                const subSectionId = link.getAttribute('href').substring(1); // # 제거
                 const subSection = document.getElementById(subSectionId);
 
                 if (subSection) {
@@ -111,30 +111,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // 7. 모든 진행도 표시를 업데이트 (섹션별 + 마스터 항목별 + 전체)
     function updateAllProgressDisplays() {
         gameChecklistSections.forEach(section => updateSectionProgress(section));
-        updateMasterChecklistProgress(); // 새로 추가된 마스터 항목별 진행도 업데이트
+        updateMasterChecklistProgress(); // 마스터 항목별 진행도 업데이트
         updateOverallProgress();
-        updateMasterChecklistStatus(); // 마스터 체크박스 자체의 체크 상태 동기화
+        // 마스터 체크박스 자체의 체크 상태 동기화 기능은 제거됨
     }
 
-    // 8. 하위 섹션의 체크 상태에 따라 마스터 체크리스트의 체크박스 상태 동기화
-    function updateMasterChecklistStatus() {
-        masterChecklistSection.querySelectorAll('input[type="checkbox"]').forEach(masterCheckbox => {
-            const subSectionId = masterCheckbox.id.replace('master_', '');
-            const subSection = document.getElementById(subSectionId);
-
-            if (subSection) {
-                const checkboxesInSection = subSection.querySelectorAll('input[type="checkbox"]');
-                const totalItems = checkboxesInSection.length;
-                const checkedItems = Array.from(checkboxesInSection).filter(cb => cb.checked).length;
-
-                // 모든 하위 항목이 체크되면 마스터 체크박스도 체크
-                masterCheckbox.checked = (totalItems > 0 && checkedItems === totalItems);
-                updateLabelStyle(masterCheckbox); // 마스터 체크박스의 라벨 스타일도 업데이트
-            }
-        });
-    }
-
-    // 9. 개별 체크박스 변경 이벤트 리스너 설정
+    // 8. 개별 체크박스 변경 이벤트 리스너 설정
     gameChecklistSections.forEach(section => {
         const checkboxes = section.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(checkbox => {
@@ -145,27 +127,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 10. 마스터 체크리스트 체크박스 변경 이벤트 리스너 설정
-    masterChecklistSection.querySelectorAll('input[type="checkbox"]').forEach(masterCheckbox => {
-        masterCheckbox.addEventListener('change', (event) => {
-            const targetSectionId = event.target.id.replace('master_', ''); // 예: master_addsDomain -> addsDomain
-            const targetSection = document.getElementById(targetSectionId);
+    // 9. 마스터 체크리스트 링크 클릭 이벤트 리스너 설정 (체크 기능 제거, 스크롤 이동 기능 추가)
+    masterChecklistSection.querySelectorAll('.master-section-link').forEach(link => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault(); // 기본 링크 이동 방지
+
+            const targetId = link.getAttribute('href'); // 예: #addsDomain
+            const targetSection = document.querySelector(targetId);
 
             if (targetSection) {
-                const checkboxesInSection = targetSection.querySelectorAll('input[type="checkbox"]');
-                checkboxesInSection.forEach(cb => {
-                    cb.checked = event.target.checked; // 마스터 체크박스 상태에 따라 하위 체크박스 상태 변경
-                    updateLabelStyle(cb);
+                // 부드러운 스크롤 효과
+                targetSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start' // 섹션 상단으로 스크롤
                 });
             }
-            saveProgress(); // saveProgress가 updateAllProgressDisplays를 호출함
         });
     });
 
-    // 11. '모든 체크리스트 초기화' 버튼 클릭 시
+    // 10. '모든 체크리스트 초기화' 버튼 클릭 시
     clearButton.addEventListener('click', () => {
         if (confirm('정말 모든 체크리스트를 초기화하시겠습니까?')) {
-            allChecklistSections.forEach(section => { // 모든 섹션의 체크박스 초기화
+            gameChecklistSections.forEach(section => { // 실제 게임 진행도 섹션의 체크박스만 초기화
                 const checkboxes = section.querySelectorAll('input[type="checkbox"]');
                 checkboxes.forEach(checkbox => {
                     checkbox.checked = false;
