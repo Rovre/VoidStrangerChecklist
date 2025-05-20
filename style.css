@@ -1,78 +1,3 @@
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f4;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start; /* 상단 정렬 */
-    min-height: 100vh;
-    margin: 20px; /* 상단에 여백 추가 */
-    box-sizing: border-box;
-}
-
-.container {
-    background-color: #ffffff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 600px;
-}
-
-h1 {
-    color: #333;
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-ul {
-    list-style: none;
-    padding: 0;
-}
-
-li {
-    background-color: #e9e9e9;
-    margin-bottom: 10px;
-    padding: 15px;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-}
-
-input[type="checkbox"] {
-    margin-right: 15px;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-}
-
-input[type="checkbox"]:checked + label {
-    text-decoration: line-through;
-    color: #888;
-}
-
-label {
-    cursor: pointer;
-    flex-grow: 1; /* 라벨이 남은 공간을 차지하도록 */
-}
-
-#clearButton {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 20px;
-}
-
-#clearButton:hover {
-    background-color: #c82333;
-}
-
-
 /* 기존 CSS 내용 아래에 추가 */
 
 h1 #overallProgress,
@@ -85,4 +10,42 @@ h2 .section-progress {
 
 h2 .section-progress.done { /* DONE 텍스트 스타일 */
     color: #28a745; /* 초록색 */
+}
+
+/* 언어 선택기 스타일 */
+.language-selector {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.language-selector label {
+    margin-right: 8px;
+    color: #333;
+    font-size: 14px;
+}
+
+.language-selector select {
+    padding: 5px 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+
+/* 모바일 화면에서 container와 겹치지 않도록 조정 */
+@media (max-width: 700px) {
+    .language-selector {
+        position: relative; /* static으로 변경하여 container 내부 흐름 따르도록 */
+        top: auto;
+        right: auto;
+        margin-bottom: 20px; /* 컨테이너 내용과 간격 */
+        text-align: center; /* 가운데 정렬 */
+    }
+    body {
+        align-items: center; /* 모바일에서는 중앙 정렬이 더 나을 수 있음 */
+    }
 }
