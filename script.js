@@ -14,15 +14,14 @@ document.addEventListener('DOMContentLoaded', () => {
             pageTitle: "Mementos Checklist",
             mainTitle: "Mementos Checklist",
             masterChecklistTitle: "Checklist",
-            domainSuffix: "'s Domain", // For Add's Domain, Eus's Domain etc.
+            domainSuffix: "'s Domain",
             alphabetDomain: "Alphabet Domain",
             secretMementos: "Secret Mementos",
-            chambersSuffix: " Chambers", // For Void Lord Chambers
-            voidLordChambersSectionTitle: "Void Lord", // Only "Void Lord" part for the H2
-            shortcuts: "Shortcuts", // Section title
-            shortcutPrefix: "Shortcut", // For "Shortcut 1", "Shortcut 2"
+            chambersSuffix: " Chambers", // For "Void Lord Chambers" H2 title
+            chamberItemSuffix: "'s Chamber", // For "Eus's Chamber", "Mon's Chamber" etc. list items
+            shortcuts: "Shortcuts",
+            shortcutPrefix: "Shortcut",
             developerRoom: "Developer Room",
-            levsChamberItem: "Lev's Chamber",
             beesStinkyHole: "Bee's Stinky Hole",
             monsLair: "Mon's Lair",
             clearButton: "Reset all checklists",
@@ -38,11 +37,10 @@ document.addEventListener('DOMContentLoaded', () => {
             alphabetDomain: "알파벳 영역",
             secretMementos: "비밀 메멘토",
             chambersSuffix: "의 방",
-            voidLordChambersSectionTitle: "공허 군주",
+            chamberItemSuffix: "의 방",
             shortcuts: "지름길",
             shortcutPrefix: "지름길",
             developerRoom: "개발자 방",
-            levsChamberItem: "Lev의 방",
             beesStinkyHole: "Bee의 악취나는 구멍",
             monsLair: "Mon의 은신처",
             clearButton: "모든 체크리스트 초기화",
@@ -58,11 +56,10 @@ document.addEventListener('DOMContentLoaded', () => {
             alphabetDomain: "アルファベット領域",
             secretMementos: "秘密のメメント",
             chambersSuffix: "の部屋",
-            voidLordChambersSectionTitle: "虚無の君主",
+            chamberItemSuffix: "の部屋",
             shortcuts: "ショートカット",
             shortcutPrefix: "ショートカット",
             developerRoom: "開発者ルーム",
-            levsChamberItem: "Levの部屋",
             beesStinkyHole: "Beeの臭い穴",
             monsLair: "Monの隠れ家",
             clearButton: "全てのチェックリストをリセット",
@@ -78,11 +75,10 @@ document.addEventListener('DOMContentLoaded', () => {
             alphabetDomain: "字母领域",
             secretMementos: "秘密 Mementos",
             chambersSuffix: "的房间",
-            voidLordChambersSectionTitle: "虚空领主",
+            chamberItemSuffix: "的房间",
             shortcuts: "快捷方式",
             shortcutPrefix: "快捷方式",
             developerRoom: "开发者房间",
-            levsChamberItem: "Lev的房间",
             beesStinkyHole: "Bee的臭洞",
             monsLair: "Mon的巢穴",
             clearButton: "重置所有清单",
@@ -98,11 +94,10 @@ document.addEventListener('DOMContentLoaded', () => {
             alphabetDomain: "字母領域",
             secretMementos: "秘密 Mementos",
             chambersSuffix: "的房間",
-            voidLordChambersSectionTitle: "虛空領主",
+            chamberItemSuffix: "的房間",
             shortcuts: "捷徑",
             shortcutPrefix: "捷徑",
             developerRoom: "開發者房間",
-            levsChamberItem: "Lev的房間",
             beesStinkyHole: "Bee的臭洞",
             monsLair: "Mon的巢穴",
             clearButton: "重設所有清單",
@@ -128,107 +123,85 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('[data-translate-key]').forEach(element => {
             const key = element.getAttribute('data-translate-key');
             if (trans[key]) {
-                // For elements that are part of a larger text (like suffixes in labels or H2s)
-                if (element.tagName === 'SPAN' && (key === 'domainSuffix' || key === 'chambersSuffix' || key === 'shortcutPrefix')) {
-                    element.textContent = trans[key];
-                     // Special handling for H2 titles with suffixes
-                    if (element.parentElement.tagName === 'H2') {
-                        // Ensure the H2's structure is: ProperName + TranslatedSuffix + ProgressSpan
+                // Case 1: SPAN element (potentially part of a larger string)
+                if (element.tagName === 'SPAN') {
+                    // Subcase 1.1: Span is a suffix in an H2 (e.g., 's Domain, Chambers suffix)
+                    if ((key === 'domainSuffix' || key === 'chambersSuffix') && element.parentElement.tagName === 'H2') {
                         const h2 = element.parentElement;
-                        const progressSpan = h2.querySelector('.section-progress');
-                        // Reconstruct H2 content carefully
-                        // The proper name part is the text node before the span with data-translate-key
+                        const progressSpan = h2.querySelector('.section-progress'); // Grab before clearing
+                        
                         let properName = "";
-                        h2.childNodes.forEach(node => {
-                            if (node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== '') {
-                                properName = node.textContent.trim();
+                        let nodePointer = element.previousSibling;
+                        while(nodePointer) {
+                            if (nodePointer.nodeType === Node.TEXT_NODE && nodePointer.textContent.trim() !== "") {
+                                properName = nodePointer.textContent.trim();
+                                break;
                             }
-                        });
-                        h2.textContent = ''; // Clear existing content
-                        h2.appendChild(document.createTextNode(properName + " ")); // Add proper name
-                        element.textContent = trans[key]; // Set suffix on the span
-                        h2.appendChild(element); // Add suffix span
+                            nodePointer = nodePointer.previousSibling;
+                        }
+
+                        h2.textContent = ''; // Clear H2
+                        if (properName) {
+                            h2.appendChild(document.createTextNode(properName + " "));
+                        }
+                        element.textContent = trans[key]; 
+                        h2.appendChild(element); 
+                        
                         if (progressSpan) {
-                             h2.appendChild(document.createTextNode(" ")); // Add space before progress
-                             h2.appendChild(progressSpan); // Add progress span
+                             h2.appendChild(document.createTextNode(" ")); 
+                             h2.appendChild(progressSpan); 
                         }
-                    } else if (element.parentElement.tagName === 'LABEL' && key === 'shortcutPrefix') {
-                        // For "Shortcut X" labels, the number is a text node after the span
+                    // Subcase 1.2: Span is part of a LABEL (e.g. 's Domain, 's Chamber, Shortcut prefix)
+                    } else if ((key === 'domainSuffix' || key === 'chamberItemSuffix' || key === 'shortcutPrefix') && element.parentElement.tagName === 'LABEL') {
                         const label = element.parentElement;
-                        const numberNode = element.nextSibling; // Should be the text node with the number
-                        label.textContent = ''; // Clear
-                        element.textContent = trans[key]; // Set "Shortcut"
-                        label.appendChild(element);
-                        if (numberNode && numberNode.nodeType === Node.TEXT_NODE) {
-                            label.appendChild(document.createTextNode(numberNode.textContent)); // Add " X"
+                        const originalPrefixText = (element.previousSibling && element.previousSibling.nodeType === Node.TEXT_NODE) ? element.previousSibling.textContent : "";
+                        const originalSuffixText = (element.nextSibling && element.nextSibling.nodeType === Node.TEXT_NODE) ? element.nextSibling.textContent : "";
+
+                        label.textContent = ''; // Clear label
+
+                        if (originalPrefixText) {
+                            label.appendChild(document.createTextNode(originalPrefixText));
                         }
-                    } else if (element.parentElement.tagName === 'LABEL') { // For domainSuffix in master list labels
-                        const label = element.parentElement;
-                        let properName = "";
-                         label.childNodes.forEach(node => {
-                            if (node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== '') {
-                                properName = node.textContent.trim();
-                            }
-                        });
-                        label.textContent = '';
-                        label.appendChild(document.createTextNode(properName));
+                        
                         element.textContent = trans[key];
                         label.appendChild(element);
-                    }
 
-                }
-                // For H1 title, preserve the overallProgress span
-                else if (element.tagName === 'H1' && key === 'mainTitle') {
+                        if (originalSuffixText) {
+                            label.appendChild(document.createTextNode(originalSuffixText));
+                        }
+                    // Subcase 1.3: Other SPANs (assume full translation by key, if any)
+                    } else {
+                        // This case might not be needed if all translatable spans are covered above
+                        // or if a span is meant to be fully replaced by its key.
+                        element.textContent = trans[key];
+                    }
+                // Case 2: H1 element (main title, preserve progress span)
+                } else if (element.tagName === 'H1' && key === 'mainTitle') {
                     const progressSpan = element.querySelector('#overallProgress');
                     element.textContent = trans[key];
                     if (progressSpan) element.appendChild(progressSpan);
-                }
-                // For H2 titles that are fully translated or have a suffix span
-                else if (element.tagName === 'H2') {
-                    const progressSpan = element.querySelector('.section-progress');
-                    // If H2 has a child span for suffix, it's handled above.
-                    // This handles H2s that are fully translated by their key.
-                    if (!element.querySelector('span[data-translate-key]')) {
-                        element.textContent = trans[key] + " ";
-                        if (progressSpan) element.appendChild(progressSpan);
-                    }
-                }
-                 // For regular labels or other elements
-                else {
+                // Case 3: H2 element (fully translated by its own key, preserve progress span)
+                } else if (element.tagName === 'H2') {
+                     const progressSpan = element.querySelector('.section-progress');
+                     element.textContent = trans[key] + " "; 
+                     if(progressSpan) element.appendChild(progressSpan);
+                // Case 4: Other elements (fully translated by key)
+                } else {
                     element.textContent = trans[key];
                 }
             }
         });
         
-        // Handle Void Lord Chambers H2 separately as it's "Void Lord" + suffix
-        const voidLordChambersH2 = document.querySelector('#voidLordChambers > h2');
-        if (voidLordChambersH2) {
-            const progressSpan = voidLordChambersH2.querySelector('.section-progress');
-            const suffixSpan = voidLordChambersH2.querySelector('span[data-translate-key="chambersSuffix"]');
-            voidLordChambersH2.textContent = ''; // Clear
-            voidLordChambersH2.appendChild(document.createTextNode(translations.en.voidLordChambersSectionTitle)); // "Void Lord" (or could be from trans[voidLordChambersSectionTitle])
-            if (suffixSpan) {
-                suffixSpan.textContent = trans.chambersSuffix;
-                voidLordChambersH2.appendChild(suffixSpan);
-            }
-            if (progressSpan) {
-                voidLordChambersH2.appendChild(document.createTextNode(" "));
-                voidLordChambersH2.appendChild(progressSpan);
-            }
-        }
-
-
         if (trans.pageTitle) {
             document.title = trans.pageTitle;
         }
-        updateAllProgressDisplays();
+        updateAllProgressDisplays(); // Ensure [DONE] text is also updated
     }
 
 
     function loadProgress() {
         const savedLang = localStorage.getItem(languageStorageKey) || 'ko';
         languageSelector.value = savedLang;
-        // updateUIText must be called BEFORE progress display updates to get correct [DONE] text
         updateUIText(savedLang);
 
         const savedProgress = localStorage.getItem(checklistProgressStorageKey);
@@ -244,7 +217,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
         }
-        updateAllProgressDisplays(); // This will now use the correct language for [DONE]
+        // updateAllProgressDisplays() is called at the end of updateUIText, so not strictly needed here again
+        // but calling it ensures consistency if loadProgress logic changes.
+        updateAllProgressDisplays(); 
     }
 
     function saveProgress() {
@@ -267,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 label.style.color = '#888';
             } else {
                 label.style.textDecoration = 'none';
-                label.style.color = ''; // Reset to default CSS color
+                label.style.color = ''; 
             }
         }
     }
