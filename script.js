@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 10. '모든 체크리스트 초기화' 버튼 클릭 시
     clearButton.addEventListener('click', () => {
-        if (confirm('정말 모든 체크리스트를 초기화하시겠습니까?')) {
+        if (confirm('Are you sure you want to reset all checklists?')) {
             allChecklistSections.forEach(section => { // 모든 섹션의 체크박스 초기화
                 const checkboxes = section.querySelectorAll('input[type="checkbox"]');
                 checkboxes.forEach(checkbox => {
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             localStorage.removeItem(storageKey); // 로컬 스토리지 데이터 삭제
             updateAllProgressDisplays(); // 모든 진행도 표시 초기화
-            alert('체크리스트가 초기화되었습니다!');
+            alert('Checklist reset!');
         }
     });
 
