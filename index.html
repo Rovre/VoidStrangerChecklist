@@ -3,134 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나만의 체크리스트 (섹션별 진행도)</title>
+    <title>다크 소울 플레이스루 체크리스트</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* 새로운 스타일 추가: 섹션 제목을 위한 */
-        .section h2 {
-            margin-top: 30px;
-            margin-bottom: 15px;
-            color: #2c3e50;
-        }
-        .section h2 .progress-text {
-            font-size: 0.8em;
-            color: #555;
-            margin-left: 10px;
-        }
-        .section h2 .progress-text.done {
-            color: #28a745; /* DONE일 때 초록색 */
-            font-weight: bold;
-        }
-    </style>
 </head>
 <body>
     <div class="container">
-        <h1>나만의 중요한 체크리스트</h1>
+        <h1>Playthrough Checklist <span id="overallProgress">[0/0]</span></h1>
 
-        <div class="section" id="undead-asylum-section">
-            <h2>Undead Asylum (Level 1) <span class="progress-text"></span></h2>
-            <ul class="checklist-group">
+        <section class="checklist-section" id="undeadAsylum">
+            <h2>Undead Asylum (Level 1) <span class="section-progress">[0/0]</span></h2>
+            <ul class="section-checklist">
                 <li>
-                    <input type="checkbox" id="undead-asylum-item1">
-                    <label for="undead-asylum-item1">Grab the Dungeon Cell Key</label>
+                    <input type="checkbox" id="undeadAsylum_DungeonCellKey">
+                    <label for="undeadAsylum_DungeonCellKey">Grab the Dungeon Cell Key</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="undead-asylum-item2">
-                    <label for="undead-asylum-item2">Run passed the Asylum Demon boss or kill him to get the Demon's Great Hammer</label>
+                    <input type="checkbox" id="undeadAsylum_DemonsGreatHammer">
+                    <label for="undeadAsylum_DemonsGreatHammer">Run passed the Asylum Demon boss or kill him to get the Demon's Great Hammer</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="undead-asylum-item3">
-                    <label for="undead-asylum-item3">Grab your sword and shield</label>
+                    <input type="checkbox" id="undeadAsylum_SwordAndShield">
+                    <label for="undeadAsylum_SwordAndShield">Grab your sword and shield</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="undead-asylum-item4">
-                    <label for="undead-asylum-item4">Remember about the boulder!</label>
+                    <input type="checkbox" id="undeadAsylum_Boulder">
+                    <label for="undeadAsylum_Boulder">Remember about the boulder!</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="undead-asylum-item5">
-                    <label for="undead-asylum-item5">Talk to the Asylum knight to get the Estus Flask and Undead Asylum F2 East Key</label>
+                    <input type="checkbox" id="undeadAsylum_EstusFlaskF2EastKey">
+                    <label for="undeadAsylum_EstusFlaskF2EastKey">Talk to the Asylum knight to get the Estus Flask and Undead Asylum F2 East Key</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="undead-asylum-item6">
-                    <label for="undead-asylum-item6">Unlock the gate leading to bonfire</label>
+                    <input type="checkbox" id="undeadAsylum_Bonfire">
+                    <label for="undeadAsylum_Bonfire">Unlock the gate leading to bonfire</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="undead-asylum-item7">
-                    <label for="undead-asylum-item7">If you choose a magic class then grab your catalyst or Pyromancy Flame</label>
+                    <input type="checkbox" id="undeadAsylum_MagicClassCatalyst">
+                    <label for="undeadAsylum_MagicClassCatalyst">If you choose a magic class then grab your catalyst or Pyromancy Flame</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="undead-asylum-item8">
-                    <label for="undead-asylum-item8">Kill the Asylum Demon boss if you haven't already, remembering to do a two-handed drop attack at start</label>
+                    <input type="checkbox" id="undeadAsylum_AsylumDemon">
+                    <label for="undeadAsylum_AsylumDemon">Kill the Asylum Demon boss if you haven't already, remembering to do a two-handed drop attack at the start</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="undead-asylum-item9">
-                    <label for="undead-asylum-item9">Continue on to Firelink Shrine, grabbing the soul on the left on the way up to the nest</label>
+                    <input type="checkbox" id="undeadAsylum_FirelinkShrine">
+                    <label for="undeadAsylum_FirelinkShrine">Continue on to Firelink Shrine, grabbing the soul on the left on the way up to the nest</label>
                 </li>
             </ul>
-        </div>
+        </section>
 
-        <div class="section" id="firelink-shrine-section">
-            <h2>Firelink Shrine (Levels 1-5) <span class="progress-text"></span></h2>
-            <ul class="checklist-group">
+        <section class="checklist-section" id="firelinkShrine">
+            <h2>Firelink Shrine (Levels 1-5) <span class="section-progress">[0/0]</span></h2>
+            <ul class="section-checklist">
                 <li>
-                    <input type="checkbox" id="firelink-shrine-item1">
-                    <label for="firelink-shrine-item1">Talk to the Crestfallen Warrior</label>
+                    <input type="checkbox" id="firelinkShrine_CrestfallenWarrior">
+                    <label for="firelinkShrine_CrestfallenWarrior">Talk to the Crestfallen Warrior</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="firelink-shrine-item2">
-                    <label for="firelink-shrine-item2">Talk to Petrus of Thorolund to get the Copper Coin and optionally join the Way of White covenant</label>
+                    <input type="checkbox" id="firelinkShrine_PetrusCopperCoin">
+                    <label for="firelinkShrine_PetrusCopperCoin">Talk to Petrus of Thorolund to get the Copper Coin and optionally join the Way of White covenant</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="firelink-shrine-item3">
-                    <label for="firelink-shrine-item3">Pick up the souls, Humanity, Firebombs, Homeward Bones, Morning Star, Talisman, Cracked Red Eye Orbs and Lloyd's Talismans around the shrine</label>
+                    <input type="checkbox" id="firelinkShrine_Items">
+                    <label for="firelinkShrine_Items">Pick up the souls, Humanity, Firebombs, Homeward Bones, Morning Star, Talisman, Cracked Red Eye Orbs and Lloyd's Talismans around the shrine</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="firelink-shrine-item4">
-                    <label for="firelink-shrine-item4">Run around the graveyard and pick up the souls, Zweihander, Winged Spear, Caduceus Round Shield and the Binoculars</label>
+                    <input type="checkbox" id="firelinkShrine_RunAround">
+                    <label for="firelinkShrine_RunAround">Run around the graveyard and pick up the souls, Zweihander, Winged Spear, Caduceus Round Shield and the Binoculars</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="firelink-shrine-item5">
-                    <label for="firelink-shrine-item5">Level up with all your soft souls and then head down to New Londo Ruins to talk to Rickert of Vinheim and pick up the souls, Estoc and Transient Curses</label>
+                    <input type="checkbox" id="firelinkShrine_LevelUp">
+                    <label for="firelinkShrine_LevelUp">Level up with all your soft souls and then head down to New Londo Ruins to talk to Rickert of Vinheim and pick up the souls, Estoc and Transient Curses</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="firelink-shrine-item6">
-                    <label for="firelink-shrine-item6">Suicide run in the ruin to get the Fire Keeper Soul</label>
+                    <input type="checkbox" id="firelinkShrine_FireKeeperSoul">
+                    <label for="firelinkShrine_FireKeeperSoul">Suicide run in to the ruins to get the Fire Keeper Soul</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="firelink-shrine-item7">
-                    <label for="firelink-shrine-item7">Talk to Anastacia of Astora to reinforce your Estus Flask</label>
+                    <input type="checkbox" id="firelinkShrine_AnastaciaEstus">
+                    <label for="firelinkShrine_AnastaciaEstus">Talk to Anastacia of Astora to reinforce your Estus Flask</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="firelink-shrine-item8">
-                    <label for="firelink-shrine-item8">Head to the Valley Of Drakes and suicide run to the Undead Dragon to grab the soul on the right first, then Astora's Straight Sword and the Dragon Crest Shield</label>
+                    <input type="checkbox" id="firelinkShrine_ValleyOfDrakes">
+                    <label for="firelinkShrine_ValleyOfDrakes">Head to the Valley Of Drakes and suicide run to the Undead Dragon to grab the soul on the right first, then Astora's Straight Sword and the Dragon Crest Shield</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="firelink-shrine-item9">
-                    <label for="firelink-shrine-item9">If you died return to the dragon and then go down the valley and take the elevator up to the Darkroot Basin bonfire</label>
+                    <input type="checkbox" id="firelinkShrine_DarkrootBasin">
+                    <label for="firelinkShrine_DarkrootBasin">If you died return to the dragon and then go down the valley and take the elevator up to the Darkroot Basin bonfire</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="firelink-shrine-item10">
-                    <label for="firelink-shrine-item10">Kill the Black Knight to get the Blue Titanite Chunk and the Grass Crest Shield</label>
+                    <input type="checkbox" id="firelinkShrine_BlackKnight">
+                    <label for="firelinkShrine_BlackKnight">Kill the Black Knight to get the Blue Titanite Chunk and the Grass Crest Shield</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="firelink-shrine-item11">
-                    <label for="firelink-shrine-item11">Go up the basin and pick up the Hunter Set, Longbow and arrows, and quickly kill the Crystal Lizard</label>
+                    <input type="checkbox" id="firelinkShrine_HunterSet">
+                    <label for="firelinkShrine_HunterSet">Go up the basin and pick up the Hunter Set, Longbow and arrows, and quickly kill the Crystal Lizard</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="firelink-shrine-item12">
-                    <label for="firelink-shrine-item12">Keep going up to Undead Parish, light the bonfire above Andre the Blacksmith, and use the elevator shortcut back to the shrine</label>
+                    <input type="checkbox" id="firelinkShrine_AndreBlacksmith">
+                    <label for="firelinkShrine_AndreBlacksmith">Keep going up to Undead Parish, light the bonfire above Andre the Blacksmith, and use the elevator shortcut back to the shrine</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="firelink-shrine-item13">
-                    <label for="firelink-shrine-item13">Pick up the Undead Asylum F2 West Key from the roof and take a quick return flight back to Undead Asylum to get the Rusted Iron Ring</label>
+                    <input type="checkbox" id="firelinkShrine_UndeadAsylumRevisit">
+                    <label for="firelinkShrine_UndeadAsylumRevisit">Pick up the Undead Asylum F2 West Key from the roof and take a quick return flight back to Undead Asylum to get the Rusted Iron Ring</label>
                 </li>
                 <li>
-                    <input type="checkbox" id="firelink-shrine-item14">
-                    <label for="firelink-shrine-item14">Continue up to Undead Burg, picking up the souls and Ring Of Sacrifice from the arches under the aqueduct on the way</label>
+                    <input type="checkbox" id="firelinkShrine_UndeadBurgRing">
+                    <label for="firelinkShrine_UndeadBurgRing">Continue up to Undead Burg, picking up the souls and Ring Of Sacrifice from the arches under the aqueduct on the way</label>
                 </li>
             </ul>
-        </div>
-        
+        </section>
+
         <button id="clearButton">모든 체크리스트 초기화</button>
     </div>
 
