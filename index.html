@@ -1,25 +1,24 @@
 <!DOCTYPE html>
-<html lang="ko"> <!-- 기본 언어 설정, JS에서 동적으로 변경됨 -->
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Void Stranger Checklist</title> <!-- 이 부분은 JS로 번역하기 어려우므로, 필요시 서버 사이드 또는 빌드 시 처리 -->
+    <title data-translate-key="pageTitle">Mementos Checklist</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="language-selector">
-        <label for="lang-select" data-translate-key="languageLabel">Language:</label>
-        <select id="lang-select">
-            <option value="ko">한국어</option>
-            <option value="en">English</option>
-            <option value="ja">日本語</option>
-            <option value="zh-CN">简体中文</option>
-            <option value="zh-TW">繁體中文</option>
-        </select>
-    </div>
-
     <div class="container">
-        <h1 data-translate-key="mementosChecklistTitle">Mementos Checklist<span id="overallProgress">[0/0]</span></h1>
+        <h1 data-translate-key="mainTitle">Mementos Checklist<span id="overallProgress">[0/0]</span></h1>
+
+        <div class="language-selector-container">
+            <select id="languageSelector">
+                <option value="ko">한국어</option>
+                <option value="en">English</option>
+                <option value="ja">日本語</option>
+                <option value="zh-CN">简体中文</option>
+                <option value="zh-TW">繁體中文</option>
+            </select>
+        </div>
 
         <section class="checklist-section" id="masterChecklistSection">
             <h2 data-translate-key="masterChecklistTitle">Checklist<span class="section-progress">[0/0]</span></h2>
@@ -62,15 +61,15 @@
                 </li>
                 <li>
                     <input type="checkbox" id="master_secretMementos">
-                    <label for="master_secretMementos">Secret Mementos</label>
+                    <label for="master_secretMementos" data-translate-key="secretMementos">Secret Mementos</label>
                 </li>
                 <li>
                     <input type="checkbox" id="master_voidLordChambers">
-                    <label for="master_voidLordChambers">Void Lord Chambers</label>
+                    <label for="master_voidLordChambers" data-translate-key="voidLordChambers">Void Lord Chambers</label>
                 </li>
                 <li>
                     <input type="checkbox" id="master_shortcuts">
-                    <label for="master_shortcuts">Shortcuts</label>
+                    <label for="master_shortcuts" data-translate-key="shortcuts">Shortcuts</label>
                 </li>
                 <li>
                     <input type="checkbox" id="master_dis">
@@ -78,13 +77,13 @@
                 </li>
                 <li>
                     <input type="checkbox" id="master_developerRoom">
-                    <label for="master_developerRoom">Developer Room</label>
+                    <label for="master_developerRoom" data-translate-key="developerRoom">Developer Room</label>
                 </li>
                 </ul>
         </section>
 
         <section class="checklist-section" id="addsDomain">
-            <h2 data-translate-key="addsDomainTitle">Add's Domain <span class="section-progress">[0/0]</span></h2>
+            <h2>Add's Domain <span class="section-progress">[0/0]</span></h2>
             <ul class="section-checklist">
                 <li>
                     <input type="checkbox" id="addsDomain_B001Gray">
@@ -150,7 +149,7 @@
         </section>
 
         <section class="checklist-section" id="eussDomain">
-            <h2 data-translate-key="eussDomainTitle">Eus's Domain <span class="section-progress">[0/0]</span></h2>
+            <h2>Eus's Domain <span class="section-progress">[0/0]</span></h2>
             <ul class="section-checklist">
                 <li>
                     <input type="checkbox" id="eussDomain_B033Gray">
@@ -200,7 +199,7 @@
         </section>
 
         <section class="checklist-section" id="beesDomain">
-            <h2 data-translate-key="beesDomainTitle">Bee's Domain <span class="section-progress">[0/0]</span></h2>
+            <h2>Bee's Domain <span class="section-progress">[0/0]</span></h2>
             <ul class="section-checklist">
                 <li>
                     <input type="checkbox" id="beesDomain_B059Gray">
@@ -242,7 +241,7 @@
         </section>
 
         <section class="checklist-section" id="mon'sDomain">
-            <h2 data-translate-key="monsDomainTitle">Mon's Domain <span class="section-progress">[0/0]</span></h2>
+            <h2>Mon's Domain <span class="section-progress">[0/0]</span></h2>
             <ul class="section-checklist">
                 <li>
                     <input type="checkbox" id="monsDomain_B091Lillie">
@@ -268,7 +267,7 @@
         </section>
 
         <section class="checklist-section" id="tan'sDomain">
-            <h2 data-translate-key="tansDomainTitle">Tan's Domain <span class="section-progress">[0/0]</span></h2>
+            <h2>Tan's Domain <span class="section-progress">[0/0]</span></h2>
             <ul class="section-checklist">
                 <li>
                     <input type="checkbox" id="tansDomain_B116Gray">
@@ -306,7 +305,7 @@
         </section>
 
         <section class="checklist-section" id="gor'sDomain">
-            <h2 data-translate-key="gorsDomainTitle">Gor's Domain <span class="section-progress">[0/0]</span></h2>
+            <h2>Gor's Domain <span class="section-progress">[0/0]</span></h2>
             <ul class="section-checklist">
                 <li>
                     <input type="checkbox" id="gorsDomain_B141Gray">
@@ -348,7 +347,7 @@
         </section>
 
         <section class="checklist-section" id="lev'sDomain">
-            <h2 data-translate-key="levsDomainTitle">Lev's Domain <span class="section-progress">[0/0]</span></h2>
+            <h2>Lev's Domain <span class="section-progress">[0/0]</span></h2>
             <ul class="section-checklist">
                 <li>
                     <input type="checkbox" id="levsDomain_B172Gray">
@@ -374,7 +373,7 @@
         </section>
 
         <section class="checklist-section" id="cif'sDomain">
-            <h2 data-translate-key="cifsDomainTitle">Cif's Domain <span class="section-progress">[0/0]</span></h2>
+            <h2>Cif's Domain <span class="section-progress">[0/0]</span></h2>
             <ul class="section-checklist">
                 <li>
                     <input type="checkbox" id="cifsDomain_B200Gray">
@@ -424,7 +423,7 @@
         </section>
         
         <section class="checklist-section" id="alphabetDomain">
-            <h2 data-translate-key="alphabetDomainTitle">Alphabet Domain <span class="section-progress">[0/0]</span></h2>
+            <h2>Alphabet Domain <span class="section-progress">[0/0]</span></h2>
             <ul class="section-checklist">
                 <li>
                     <input type="checkbox" id="alphabetDomain_B228Lillie">
@@ -534,7 +533,7 @@
         </section>
 
         <section class="checklist-section" id="secretMementos">
-            <h2 data-translate-key="secretMementosTitle">Secret Mementos <span class="section-progress">[0/0]</span></h2>
+            <h2 data-translate-key="secretMementos">Secret Mementos <span class="section-progress">[0/0]</span></h2>
             <ul class="section-checklist">
                 <li>
                     <input type="checkbox" id="secretMementos_Shortcut1">
@@ -572,7 +571,7 @@
         </section>
         
         <section class="checklist-section" id="voidLordChambers">
-            <h2 data-translate-key="voidLordChambersTitle">Void Lord Chambers <span class="section-progress">[0/0]</span></h2>
+            <h2 data-translate-key="voidLordChambers">Void Lord Chambers <span class="section-progress">[0/0]</span></h2>
             <ul class="section-checklist">
                 <li>
                     <input type="checkbox" id="voidLordChambers_EusChamber">
@@ -594,7 +593,7 @@
         </section>
         
         <section class="checklist-section" id="dis">
-            <h2 data-translate-key="disTitle">DIS <span class="section-progress">[0/0]</span></h2>
+            <h2>DIS <span class="section-progress">[0/0]</span></h2>
             <ul class="section-checklist">
                 <li>
                     <input type="checkbox" id="dis_D03">
@@ -644,7 +643,7 @@
         </section>
 
         <section class="checklist-section" id="shortcuts">
-            <h2 data-translate-key="shortcutsTitle">Shortcuts <span class="section-progress">[0/0]</span></h2>
+            <h2 data-translate-key="shortcuts">Shortcuts <span class="section-progress">[0/0]</span></h2>
             <ul class="section-checklist">
                 <li>
                     <input type="checkbox" id="shortcuts_Shortcut1">
@@ -670,7 +669,7 @@
         </section>
         
         <section class="checklist-section" id="developerRoom">
-            <h2 data-translate-key="developerRoomTitle">Developer Room <span class="section-progress">[0/0]</span></h2>
+            <h2 data-translate-key="developerRoom">Developer Room <span class="section-progress">[0/0]</span></h2>
             <ul class="section-checklist">
                 <li>
                     <input type="checkbox" id="developerRoom_SE6">
@@ -679,7 +678,7 @@
             </ul>
         </section>
         
-        <button id="clearButton" data-translate-key="resetButton">Reset all checklists</button>
+        <button id="clearButton" data-translate-key="clearButton">Reset all checklists</button>
     </div>
 
     <script src="script.js"></script>
