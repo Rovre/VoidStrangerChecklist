@@ -101,3 +101,26 @@ h2 .section-progress {
 h2 .section-progress.done { /* DONE 텍스트 스타일 */
     color: #28a745; /* 초록색 */
 }
+
+/* Master Checklist Item Styling */
+#masterChecklistSection .section-checklist li {
+    cursor: pointer; /* 클릭 가능하도록 커서 변경 */
+    /* display: flex; align-items: center; 는 이미 li 기본 스타일에 있음 */
+}
+
+#masterChecklistSection .section-checklist li label {
+    flex-grow: 1; /* 레이블이 가능한 많은 공간을 차지 */
+    margin-right: 10px; /* 레이블과 진행률 사이 간격 */
+    cursor: default; /* label 자체는 이제 클릭 대상이 아님 (li가 클릭 대상) */
+}
+
+.master-item-progress {
+    font-size: 0.8em;
+    color: #007bff;
+    font-weight: bold;
+    white-space: nowrap; /* 진행률 텍스트가 줄바꿈되지 않도록 */
+}
+
+.master-item-progress.done {
+    color: #28a745; /* 초록색 */
+}
