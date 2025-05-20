@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const allChecklistSections = document.querySelectorAll('.checklist-section');
     const masterChecklistSection = document.getElementById('masterChecklistSection');
+    // masterChecklistItems는 masterChecklistSection이 존재할 때만 초기화
+    const masterChecklistItems = masterChecklistSection ? masterChecklistSection.querySelectorAll('.section-checklist li') : [];
     const gameChecklistSections = Array.from(allChecklistSections).filter(section => section.id !== 'masterChecklistSection');
 
     const translations = {
@@ -17,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
             domainSuffix: "'s Domain",
             alphabetDomain: "Alphabet Domain",
             secretMementos: "Secret Mementos",
-            chambersSuffix: " Chambers", // For "Void Lord Chambers" H2 title
+            chambersSuffix: " Chambers", // For "Void Lord Chambers" H2 title AND master list item
             chamberItemSuffix: "'s Chamber", // For "Eus's Chamber", "Mon's Chamber" etc. list items
             shortcuts: "Shortcuts",
             shortcutPrefix: "Shortcut",
@@ -123,13 +125,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('[data-translate-key]').forEach(element => {
             const key = element.getAttribute('data-translate-key');
             if (trans[key]) {
-                // Case 1: SPAN element (potentially part of a larger string)
                 if (element.tagName === 'SPAN') {
-                    // Subcase 1.1: Span is a suffix in an H2 (e.g., 's Domain, Chambers suffix)
-                    if ((key === 'domainSuffix' || key === 'chambersSuffix') && element.parentElement.tagName === 'H2') {
+                    if ((key === 'domainSuffix' || key === 'chambersSuffix') && element.parentElement.tagName === 'H2') { // H2 내의 suffix
                         const h2 = element.parentElement;
-                        const progressSpan = h2.querySelector('.section-progress'); // Grab before clearing
-                        
+                        const progressSpan = h2.querySelector('.section-progress');
                         let properName = "";
                         let nodePointer = element.previousSibling;
                         while(nodePointer) {
@@ -139,54 +138,48 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                             nodePointer = nodePointer.previousSibling;
                         }
-
-                        h2.textContent = ''; // Clear H2
+                        h2.textContent = '';
                         if (properName) {
                             h2.appendChild(document.createTextNode(properName + " "));
                         }
                         element.textContent = trans[key]; 
                         h2.appendChild(element); 
-                        
                         if (progressSpan) {
                              h2.appendChild(document.createTextNode(" ")); 
                              h2.appendChild(progressSpan); 
                         }
-                    // Subcase 1.2: Span is part of a LABEL (e.g. 's Domain, 's Chamber, Shortcut prefix)
-                    } else if ((key === 'domainSuffix' || key === 'chamberItemSuffix' || key === 'shortcutPrefix') && element.parentElement.tagName === 'LABEL') {
+                    } else if ((key === 'domainSuffix' || key === 'chamberItemSuffix' || key === 'shortcutPrefix' || key === 'chambersSuffix') && element.parentElement.tagName === 'LABEL') { // LABEL 내의 suffix/prefix
                         const label = element.parentElement;
                         const originalPrefixText = (element.previousSibling && element.previousSibling.nodeType === Node.TEXT_NODE) ? element.previousSibling.textContent : "";
                         const originalSuffixText = (element.nextSibling && element.nextSibling.nodeType === Node.TEXT_NODE) ? element.nextSibling.textContent : "";
-
-                        label.textContent = ''; // Clear label
-
-                        if (originalPrefixText) {
-                            label.appendChild(document.createTextNode(originalPrefixText));
-                        }
                         
-                        element.textContent = trans[key];
-                        label.appendChild(element);
+                        // Clear only the span, then reconstruct
+                        let newLabelContent = [];
+                        if(originalPrefixText) newLabelContent.push(document.createTextNode(originalPrefixText));
+                        
+                        const newSpan = document.createElement('span');
+                        newSpan.setAttribute('data-translate-key', key);
+                        newSpan.textContent = trans[key];
+                        newLabelContent.push(newSpan);
 
-                        if (originalSuffixText) {
-                            label.appendChild(document.createTextNode(originalSuffixText));
-                        }
-                    // Subcase 1.3: Other SPANs (assume full translation by key, if any)
+                        if(originalSuffixText) newLabelContent.push(document.createTextNode(originalSuffixText));
+                        
+                        // Clear label and append new nodes
+                        label.innerHTML = ''; // Clear previous content
+                        newLabelContent.forEach(node => label.appendChild(node));
+
                     } else {
-                        // This case might not be needed if all translatable spans are covered above
-                        // or if a span is meant to be fully replaced by its key.
                         element.textContent = trans[key];
                     }
-                // Case 2: H1 element (main title, preserve progress span)
                 } else if (element.tagName === 'H1' && key === 'mainTitle') {
                     const progressSpan = element.querySelector('#overallProgress');
                     element.textContent = trans[key];
                     if (progressSpan) element.appendChild(progressSpan);
-                // Case 3: H2 element (fully translated by its own key, preserve progress span)
                 } else if (element.tagName === 'H2') {
                      const progressSpan = element.querySelector('.section-progress');
                      element.textContent = trans[key] + " "; 
                      if(progressSpan) element.appendChild(progressSpan);
-                // Case 4: Other elements (fully translated by key)
-                } else {
+                } else { // Includes LABELs with direct data-translate-key
                     element.textContent = trans[key];
                 }
             }
@@ -195,19 +188,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (trans.pageTitle) {
             document.title = trans.pageTitle;
         }
-        updateAllProgressDisplays(); // Ensure [DONE] text is also updated
+        updateAllProgressDisplays();
     }
 
 
     function loadProgress() {
         const savedLang = localStorage.getItem(languageStorageKey) || 'ko';
         languageSelector.value = savedLang;
-        updateUIText(savedLang);
+        // updateUIText will be called, which in turn calls updateAllProgressDisplays
+        updateUIText(savedLang); 
 
         const savedProgress = localStorage.getItem(checklistProgressStorageKey);
         if (savedProgress) {
             const progress = JSON.parse(savedProgress);
             allChecklistSections.forEach(section => {
+                // Do not process masterChecklistSection here for checkbox states
+                if (section.id === 'masterChecklistSection') return;
+
                 const checkboxes = section.querySelectorAll('input[type="checkbox"]');
                 checkboxes.forEach(checkbox => {
                     if (progress[checkbox.id] !== undefined) {
@@ -217,14 +214,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
         }
-        // updateAllProgressDisplays() is called at the end of updateUIText, so not strictly needed here again
-        // but calling it ensures consistency if loadProgress logic changes.
-        updateAllProgressDisplays(); 
+        // updateAllProgressDisplays is called at the end of updateUIText
     }
 
     function saveProgress() {
         const progress = {};
-        allChecklistSections.forEach(section => {
+        gameChecklistSections.forEach(section => { // Only save progress for game sections
             const checkboxes = section.querySelectorAll('input[type="checkbox"]');
             checkboxes.forEach(checkbox => {
                 progress[checkbox.id] = checkbox.checked;
@@ -236,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateLabelStyle(checkbox) {
         const label = checkbox.nextElementSibling;
-        if (label) {
+        if (label && label.tagName === 'LABEL') { // Ensure it's a label
             if (checkbox.checked) {
                 label.style.textDecoration = 'line-through';
                 label.style.color = '#888';
@@ -251,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const checkboxes = section.querySelectorAll('input[type="checkbox"]');
         const totalItems = checkboxes.length;
         const checkedItems = Array.from(checkboxes).filter(cb => cb.checked).length;
-        const sectionProgressSpan = section.querySelector('.section-progress');
+        const sectionProgressSpan = section.querySelector('h2 .section-progress'); // Progress is in H2
 
         if (sectionProgressSpan) {
             if (totalItems > 0 && checkedItems === totalItems) {
@@ -282,56 +277,85 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateMasterChecklist() {
         if (!masterChecklistSection) return;
 
-        gameChecklistSections.forEach(section => {
-            const masterCheckboxId = `master_${section.id}`;
-            const masterCheckbox = document.getElementById(masterCheckboxId);
+        let masterItemsDoneCount = 0;
+        const totalMasterItems = masterChecklistItems.length;
 
-            if (masterCheckbox) {
-                const checkboxesInSection = section.querySelectorAll('input[type="checkbox"]');
-                const totalItems = checkboxesInSection.length;
-                const checkedItems = Array.from(checkboxesInSection).filter(cb => cb.checked).length;
+        masterChecklistItems.forEach(item => {
+            const targetSectionId = item.dataset.targetSectionId;
+            const targetSection = document.getElementById(targetSectionId);
+            const progressSpan = item.querySelector('.master-item-progress');
 
-                const shouldBeChecked = (totalItems > 0 && checkedItems === totalItems);
-                if (masterCheckbox.checked !== shouldBeChecked) {
-                    masterCheckbox.checked = shouldBeChecked;
-                    updateLabelStyle(masterCheckbox);
+            if (targetSection && progressSpan) {
+                const checkboxesInSection = targetSection.querySelectorAll('input[type="checkbox"]');
+                const totalSubItems = checkboxesInSection.length;
+                const checkedSubItems = Array.from(checkboxesInSection).filter(cb => cb.checked).length;
+
+                if (totalSubItems > 0 && checkedSubItems === totalSubItems) {
+                    progressSpan.textContent = translations[currentLanguage].doneStatus || '[DONE]';
+                    progressSpan.classList.add('done');
+                    // This master item is considered "done" if its target section is done
+                } else {
+                    progressSpan.textContent = `[${checkedSubItems}/${totalSubItems}]`;
+                    progressSpan.classList.remove('done');
                 }
             }
         });
-        updateSectionProgress(masterChecklistSection);
+        
+        // Update the progress for the master checklist section title (e.g., Checklist [X/Y])
+        // This counts how many master *items* (target sections) are fully completed.
+        let completedMasterItems = 0;
+        masterChecklistItems.forEach(item => {
+            const progressSpan = item.querySelector('.master-item-progress');
+            if (progressSpan && progressSpan.classList.contains('done')) {
+                completedMasterItems++;
+            }
+        });
+
+        const masterSectionProgressSpan = masterChecklistSection.querySelector('h2 .section-progress');
+        if (masterSectionProgressSpan) {
+            if (totalMasterItems > 0 && completedMasterItems === totalMasterItems) {
+                masterSectionProgressSpan.textContent = translations[currentLanguage].doneStatus || '[DONE]';
+                masterSectionProgressSpan.classList.add('done');
+            } else {
+                masterSectionProgressSpan.textContent = `[${completedMasterItems}/${totalMasterItems}]`;
+                masterSectionProgressSpan.classList.remove('done');
+            }
+        }
     }
 
     function updateAllProgressDisplays() {
         gameChecklistSections.forEach(section => updateSectionProgress(section));
-        updateMasterChecklist();
-        updateOverallProgress();
+        updateMasterChecklist(); // Update master items based on sub-sections
+        updateOverallProgress(); // Update overall based on sub-sections
     }
 
+    // Event listeners for game checklist sections (sub-sections)
     gameChecklistSections.forEach(section => {
         const checkboxes = section.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', (event) => {
                 updateLabelStyle(event.target);
-                saveProgress();
+                saveProgress(); // This will trigger updateAllProgressDisplays
             });
         });
     });
 
+    // Event listeners for master checklist items (for scrolling)
     if (masterChecklistSection) {
-        const masterCheckboxes = masterChecklistSection.querySelectorAll('input[type="checkbox"]');
-        masterCheckboxes.forEach(masterCheckbox => {
-            masterCheckbox.addEventListener('change', (event) => {
-                const targetSectionId = event.target.id.replace('master_', '');
-                const targetSection = document.getElementById(targetSectionId);
-
-                if (targetSection) {
-                    const checkboxesInSection = targetSection.querySelectorAll('input[type="checkbox"]');
-                    checkboxesInSection.forEach(cb => {
-                        cb.checked = event.target.checked;
-                        updateLabelStyle(cb);
-                    });
+        masterChecklistItems.forEach(item => {
+            item.addEventListener('click', (event) => {
+                // Prevent click if a nested interactive element was clicked (though not expected here)
+                if (event.target !== item && event.target.closest('span, label') !== event.target) {
+                     // Allow clicks on text/spans inside label, or the label itself, or the span.master-item-progress
+                     // but if something else inside li is clicked, ignore.
+                     // More robust: if (event.target.closest('a, button, input')) return;
                 }
-                saveProgress();
+
+                const targetSectionId = item.dataset.targetSectionId;
+                const targetSection = document.getElementById(targetSectionId);
+                if (targetSection) {
+                    targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             });
         });
     }
@@ -340,6 +364,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const confirmMessage = translations[currentLanguage].confirmReset || "Are you sure you want to reset all checklists?";
         if (confirm(confirmMessage)) {
             allChecklistSections.forEach(section => {
+                // Only reset checkboxes in game sections
+                if (section.id === 'masterChecklistSection') return;
+
                 const checkboxes = section.querySelectorAll('input[type="checkbox"]');
                 checkboxes.forEach(checkbox => {
                     checkbox.checked = false;
@@ -347,15 +374,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
             localStorage.removeItem(checklistProgressStorageKey);
-            updateAllProgressDisplays();
+            updateAllProgressDisplays(); // This will update master list progress spans too
             const alertMessage = translations[currentLanguage].alertReset || "Checklist has been reset!";
             alert(alertMessage);
         }
     });
 
     languageSelector.addEventListener('change', (event) => {
-        updateUIText(event.target.value);
+        updateUIText(event.target.value); // This will trigger updateAllProgressDisplays
     });
 
-    loadProgress();
+    loadProgress(); // Initial load
 });
