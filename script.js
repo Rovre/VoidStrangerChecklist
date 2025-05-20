@@ -88,14 +88,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 6. 마스터 체크리스트 내의 각 하위 섹션 진행도를 업데이트
     function updateMasterChecklistProgress() {
+        // masterChecklistSection 내의 모든 .master-section-link 요소를 찾습니다.
         const masterLinks = masterChecklistSection.querySelectorAll('.master-section-link');
 
         masterLinks.forEach(link => {
-            const progressSpan = link.querySelector('.section-master-progress'); // 이 span을 업데이트
+            // 진행도 텍스트가 표시될 <span> 요소를 찾습니다.
+            const progressSpan = link.querySelector('.section-master-progress'); 
 
             if (progressSpan) {
-                // href 속성에서 섹션 ID를 얻음 (예: #addsDomain -> addsDomain)
-                const subSectionId = link.getAttribute('href').substring(1); // # 제거
+                // 링크의 href 속성에서 하위 섹션 ID를 얻습니다. (예: #addsDomain -> addsDomain)
+                const subSectionId = link.getAttribute('href').substring(1); // '#' 제거
                 const subSection = document.getElementById(subSectionId);
 
                 if (subSection) {
@@ -111,9 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // 7. 모든 진행도 표시를 업데이트 (섹션별 + 마스터 항목별 + 전체)
     function updateAllProgressDisplays() {
         gameChecklistSections.forEach(section => updateSectionProgress(section));
-        updateMasterChecklistProgress(); // 마스터 항목별 진행도 업데이트
+        updateMasterChecklistProgress(); // 마스터 항목별 진행도 업데이트 호출
         updateOverallProgress();
-        // 마스터 체크박스 자체의 체크 상태 동기화 기능은 제거됨
+        // 마스터 체크박스 자체의 체크 상태 동기화 기능은 제거되었습니다.
     }
 
     // 8. 개별 체크박스 변경 이벤트 리스너 설정
