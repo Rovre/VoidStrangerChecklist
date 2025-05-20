@@ -2,26 +2,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const overallProgressSpan = document.getElementById('overallProgress');
     const clearButton = document.getElementById('clearButton');
     const languageSelector = document.getElementById('languageSelector');
-    const checklistProgressStorageKey = 'darkSoulsChecklistProgress'; // 로컬 스토리지 키
-    const languageStorageKey = 'voidStrangerChecklistLanguage'; // 언어 설정 저장 키
+    const checklistProgressStorageKey = 'darkSoulsChecklistProgress';
+    const languageStorageKey = 'voidStrangerChecklistLanguage';
 
-    // 모든 체크리스트 섹션 가져오기 (마스터 섹션 포함)
     const allChecklistSections = document.querySelectorAll('.checklist-section');
-    // 마스터 체크리스트 섹션만 따로 가져옴
     const masterChecklistSection = document.getElementById('masterChecklistSection');
-    // 실제 게임 진행도와 관련된 하위 섹션들 (마스터 섹션 제외)
     const gameChecklistSections = Array.from(allChecklistSections).filter(section => section.id !== 'masterChecklistSection');
 
-    // 번역 문자열 객체
     const translations = {
         en: {
             pageTitle: "Mementos Checklist",
             mainTitle: "Mementos Checklist",
             masterChecklistTitle: "Checklist",
+            domainSuffix: "'s Domain", // For Add's Domain, Eus's Domain etc.
+            alphabetDomain: "Alphabet Domain",
             secretMementos: "Secret Mementos",
-            voidLordChambers: "Void Lord Chambers",
-            shortcuts: "Shortcuts",
+            chambersSuffix: " Chambers", // For Void Lord Chambers
+            voidLordChambersSectionTitle: "Void Lord", // Only "Void Lord" part for the H2
+            shortcuts: "Shortcuts", // Section title
+            shortcutPrefix: "Shortcut", // For "Shortcut 1", "Shortcut 2"
             developerRoom: "Developer Room",
+            levsChamberItem: "Lev's Chamber",
+            beesStinkyHole: "Bee's Stinky Hole",
+            monsLair: "Mon's Lair",
             clearButton: "Reset all checklists",
             doneStatus: "[DONE]",
             confirmReset: "Are you sure you want to reset all checklists?",
@@ -31,10 +34,17 @@ document.addEventListener('DOMContentLoaded', () => {
             pageTitle: "메멘토 체크리스트",
             mainTitle: "메멘토 체크리스트",
             masterChecklistTitle: "체크리스트",
+            domainSuffix: "의 영역",
+            alphabetDomain: "알파벳 영역",
             secretMementos: "비밀 메멘토",
-            voidLordChambers: "공허 군주의 방",
+            chambersSuffix: "의 방",
+            voidLordChambersSectionTitle: "공허 군주",
             shortcuts: "지름길",
+            shortcutPrefix: "지름길",
             developerRoom: "개발자 방",
+            levsChamberItem: "Lev의 방",
+            beesStinkyHole: "Bee의 악취나는 구멍",
+            monsLair: "Mon의 은신처",
             clearButton: "모든 체크리스트 초기화",
             doneStatus: "[완료]",
             confirmReset: "정말 모든 체크리스트를 초기화하시겠습니까?",
@@ -44,10 +54,17 @@ document.addEventListener('DOMContentLoaded', () => {
             pageTitle: "メメントチェックリスト",
             mainTitle: "メメントチェックリスト",
             masterChecklistTitle: "チェックリスト",
+            domainSuffix: "の領域",
+            alphabetDomain: "アルファベット領域",
             secretMementos: "秘密のメメント",
-            voidLordChambers: "虚無の君主の部屋",
+            chambersSuffix: "の部屋",
+            voidLordChambersSectionTitle: "虚無の君主",
             shortcuts: "ショートカット",
+            shortcutPrefix: "ショートカット",
             developerRoom: "開発者ルーム",
+            levsChamberItem: "Levの部屋",
+            beesStinkyHole: "Beeの臭い穴",
+            monsLair: "Monの隠れ家",
             clearButton: "全てのチェックリストをリセット",
             doneStatus: "[完了]",
             confirmReset: "本当にすべてのチェックリストを初期化しますか？",
@@ -57,10 +74,17 @@ document.addEventListener('DOMContentLoaded', () => {
             pageTitle: "Mementos 清单",
             mainTitle: "Mementos 清单",
             masterChecklistTitle: "清单",
+            domainSuffix: "的领域",
+            alphabetDomain: "字母领域",
             secretMementos: "秘密 Mementos",
-            voidLordChambers: "虚空领主房间",
+            chambersSuffix: "的房间",
+            voidLordChambersSectionTitle: "虚空领主",
             shortcuts: "快捷方式",
+            shortcutPrefix: "快捷方式",
             developerRoom: "开发者房间",
+            levsChamberItem: "Lev的房间",
+            beesStinkyHole: "Bee的臭洞",
+            monsLair: "Mon的巢穴",
             clearButton: "重置所有清单",
             doneStatus: "[已完成]",
             confirmReset: "您确定要重置所有清单吗？",
@@ -70,10 +94,17 @@ document.addEventListener('DOMContentLoaded', () => {
             pageTitle: "Mementos 清單",
             mainTitle: "Mementos 清單",
             masterChecklistTitle: "清單",
+            domainSuffix: "的領域",
+            alphabetDomain: "字母領域",
             secretMementos: "秘密 Mementos",
-            voidLordChambers: "虛空領主房間",
+            chambersSuffix: "的房間",
+            voidLordChambersSectionTitle: "虛空領主",
             shortcuts: "捷徑",
+            shortcutPrefix: "捷徑",
             developerRoom: "開發者房間",
+            levsChamberItem: "Lev的房間",
+            beesStinkyHole: "Bee的臭洞",
+            monsLair: "Mon的巢穴",
             clearButton: "重設所有清單",
             doneStatus: "[已完成]",
             confirmReset: "您確定要重設所有清單嗎？",
@@ -81,13 +112,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    let currentLanguage = 'ko'; // 기본 언어
+    let currentLanguage = 'ko';
 
-    // UI 텍스트 업데이트 함수
     function updateUIText(lang) {
         currentLanguage = lang;
-        document.documentElement.lang = lang; // html lang 속성 변경
-        localStorage.setItem(languageStorageKey, lang); // 선택된 언어 저장
+        document.documentElement.lang = lang;
+        localStorage.setItem(languageStorageKey, lang);
 
         const trans = translations[lang];
         if (!trans) {
@@ -98,41 +128,108 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('[data-translate-key]').forEach(element => {
             const key = element.getAttribute('data-translate-key');
             if (trans[key]) {
-                // H1 태그의 경우 자식 span(overallProgress)을 유지해야 함
-                if (element.tagName === 'H1' && key === 'mainTitle') {
+                // For elements that are part of a larger text (like suffixes in labels or H2s)
+                if (element.tagName === 'SPAN' && (key === 'domainSuffix' || key === 'chambersSuffix' || key === 'shortcutPrefix')) {
+                    element.textContent = trans[key];
+                     // Special handling for H2 titles with suffixes
+                    if (element.parentElement.tagName === 'H2') {
+                        // Ensure the H2's structure is: ProperName + TranslatedSuffix + ProgressSpan
+                        const h2 = element.parentElement;
+                        const progressSpan = h2.querySelector('.section-progress');
+                        // Reconstruct H2 content carefully
+                        // The proper name part is the text node before the span with data-translate-key
+                        let properName = "";
+                        h2.childNodes.forEach(node => {
+                            if (node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== '') {
+                                properName = node.textContent.trim();
+                            }
+                        });
+                        h2.textContent = ''; // Clear existing content
+                        h2.appendChild(document.createTextNode(properName + " ")); // Add proper name
+                        element.textContent = trans[key]; // Set suffix on the span
+                        h2.appendChild(element); // Add suffix span
+                        if (progressSpan) {
+                             h2.appendChild(document.createTextNode(" ")); // Add space before progress
+                             h2.appendChild(progressSpan); // Add progress span
+                        }
+                    } else if (element.parentElement.tagName === 'LABEL' && key === 'shortcutPrefix') {
+                        // For "Shortcut X" labels, the number is a text node after the span
+                        const label = element.parentElement;
+                        const numberNode = element.nextSibling; // Should be the text node with the number
+                        label.textContent = ''; // Clear
+                        element.textContent = trans[key]; // Set "Shortcut"
+                        label.appendChild(element);
+                        if (numberNode && numberNode.nodeType === Node.TEXT_NODE) {
+                            label.appendChild(document.createTextNode(numberNode.textContent)); // Add " X"
+                        }
+                    } else if (element.parentElement.tagName === 'LABEL') { // For domainSuffix in master list labels
+                        const label = element.parentElement;
+                        let properName = "";
+                         label.childNodes.forEach(node => {
+                            if (node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== '') {
+                                properName = node.textContent.trim();
+                            }
+                        });
+                        label.textContent = '';
+                        label.appendChild(document.createTextNode(properName));
+                        element.textContent = trans[key];
+                        label.appendChild(element);
+                    }
+
+                }
+                // For H1 title, preserve the overallProgress span
+                else if (element.tagName === 'H1' && key === 'mainTitle') {
                     const progressSpan = element.querySelector('#overallProgress');
-                    element.textContent = trans[key]; // 먼저 텍스트 설정
-                    if (progressSpan) element.appendChild(progressSpan); // 그 다음 span 추가
-                } 
-                // H2 태그의 경우 자식 span(section-progress)을 유지해야 함
-                else if (element.tagName === 'H2' && element.querySelector('.section-progress')) {
-                     const progressSpan = element.querySelector('.section-progress');
-                     element.textContent = trans[key] + " "; // 텍스트와 공백 설정
-                     if(progressSpan) element.appendChild(progressSpan); // 그 다음 span 추가
+                    element.textContent = trans[key];
+                    if (progressSpan) element.appendChild(progressSpan);
                 }
-                // Label for master checklist items
-                else if (element.tagName === 'LABEL' && trans[key]) {
-                     element.textContent = trans[key];
+                // For H2 titles that are fully translated or have a suffix span
+                else if (element.tagName === 'H2') {
+                    const progressSpan = element.querySelector('.section-progress');
+                    // If H2 has a child span for suffix, it's handled above.
+                    // This handles H2s that are fully translated by their key.
+                    if (!element.querySelector('span[data-translate-key]')) {
+                        element.textContent = trans[key] + " ";
+                        if (progressSpan) element.appendChild(progressSpan);
+                    }
                 }
+                 // For regular labels or other elements
                 else {
                     element.textContent = trans[key];
                 }
             }
         });
-        // 페이지 타이틀도 업데이트
+        
+        // Handle Void Lord Chambers H2 separately as it's "Void Lord" + suffix
+        const voidLordChambersH2 = document.querySelector('#voidLordChambers > h2');
+        if (voidLordChambersH2) {
+            const progressSpan = voidLordChambersH2.querySelector('.section-progress');
+            const suffixSpan = voidLordChambersH2.querySelector('span[data-translate-key="chambersSuffix"]');
+            voidLordChambersH2.textContent = ''; // Clear
+            voidLordChambersH2.appendChild(document.createTextNode(translations.en.voidLordChambersSectionTitle)); // "Void Lord" (or could be from trans[voidLordChambersSectionTitle])
+            if (suffixSpan) {
+                suffixSpan.textContent = trans.chambersSuffix;
+                voidLordChambersH2.appendChild(suffixSpan);
+            }
+            if (progressSpan) {
+                voidLordChambersH2.appendChild(document.createTextNode(" "));
+                voidLordChambersH2.appendChild(progressSpan);
+            }
+        }
+
+
         if (trans.pageTitle) {
             document.title = trans.pageTitle;
         }
-        // 진행도 표시도 언어 변경에 따라 업데이트 (특히 [DONE] 텍스트)
         updateAllProgressDisplays();
     }
 
 
-    // 1. 페이지 로드 시 저장된 상태 불러오기
     function loadProgress() {
         const savedLang = localStorage.getItem(languageStorageKey) || 'ko';
         languageSelector.value = savedLang;
-        updateUIText(savedLang); // 먼저 언어 설정 적용
+        // updateUIText must be called BEFORE progress display updates to get correct [DONE] text
+        updateUIText(savedLang);
 
         const savedProgress = localStorage.getItem(checklistProgressStorageKey);
         if (savedProgress) {
@@ -142,42 +239,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 checkboxes.forEach(checkbox => {
                     if (progress[checkbox.id] !== undefined) {
                         checkbox.checked = progress[checkbox.id];
-                        updateLabelStyle(checkbox); // 체크 상태에 따라 라벨 스타일 적용
+                        updateLabelStyle(checkbox);
                     }
                 });
             });
         }
-        updateAllProgressDisplays(); // 로드 후 모든 진행도 업데이트 (언어 적용 후 호출)
+        updateAllProgressDisplays(); // This will now use the correct language for [DONE]
     }
 
-    // 2. 현재 체크 상태 저장하기
     function saveProgress() {
         const progress = {};
-        allChecklistSections.forEach(section => { // 모든 섹션의 체크박스 상태 저장
+        allChecklistSections.forEach(section => {
             const checkboxes = section.querySelectorAll('input[type="checkbox"]');
             checkboxes.forEach(checkbox => {
                 progress[checkbox.id] = checkbox.checked;
             });
         });
         localStorage.setItem(checklistProgressStorageKey, JSON.stringify(progress));
-        updateAllProgressDisplays(); // 저장 후 모든 진행도 업데이트
+        updateAllProgressDisplays();
     }
 
-    // 3. 체크박스 상태에 따라 라벨 스타일 변경
     function updateLabelStyle(checkbox) {
         const label = checkbox.nextElementSibling;
-        if (label) { // label이 존재하는지 확인
+        if (label) {
             if (checkbox.checked) {
                 label.style.textDecoration = 'line-through';
                 label.style.color = '#888';
             } else {
                 label.style.textDecoration = 'none';
-                label.style.color = '#333'; // 기본 라벨 색상으로 복원
+                label.style.color = ''; // Reset to default CSS color
             }
         }
     }
 
-    // 4. 각 섹션의 진행도를 업데이트하고 표시
     function updateSectionProgress(section) {
         const checkboxes = section.querySelectorAll('input[type="checkbox"]');
         const totalItems = checkboxes.length;
@@ -185,17 +279,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const sectionProgressSpan = section.querySelector('.section-progress');
 
         if (sectionProgressSpan) {
-            if (totalItems > 0 && checkedItems === totalItems) { // 항목이 있고 모두 체크되었을 때
+            if (totalItems > 0 && checkedItems === totalItems) {
                 sectionProgressSpan.textContent = translations[currentLanguage].doneStatus || '[DONE]';
-                sectionProgressSpan.classList.add('done'); // DONE 스타일 추가
+                sectionProgressSpan.classList.add('done');
             } else {
                 sectionProgressSpan.textContent = `[${checkedItems}/${totalItems}]`;
-                sectionProgressSpan.classList.remove('done'); // DONE 스타일 제거
+                sectionProgressSpan.classList.remove('done');
             }
         }
     }
 
-    // 5. 전체 진행도를 업데이트하고 표시 (모든 하위 체크리스트 항목만 계산)
     function updateOverallProgress() {
         let totalItems = 0;
         let totalCheckedItems = 0;
@@ -211,12 +304,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 6. 마스터 체크리스트(상위 체크리스트) 업데이트 로직
     function updateMasterChecklist() {
-        if (!masterChecklistSection) return; 
+        if (!masterChecklistSection) return;
 
         gameChecklistSections.forEach(section => {
-            const masterCheckboxId = `master_${section.id}`; 
+            const masterCheckboxId = `master_${section.id}`;
             const masterCheckbox = document.getElementById(masterCheckboxId);
 
             if (masterCheckbox) {
@@ -231,70 +323,64 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
-        updateSectionProgress(masterChecklistSection); 
+        updateSectionProgress(masterChecklistSection);
     }
 
-    // 7. 모든 진행도 표시를 업데이트 (섹션별 + 전체 + 마스터)
     function updateAllProgressDisplays() {
         gameChecklistSections.forEach(section => updateSectionProgress(section));
         updateMasterChecklist();
         updateOverallProgress();
     }
 
-    // 8. 체크박스 변경 이벤트 리스너 설정
     gameChecklistSections.forEach(section => {
         const checkboxes = section.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', (event) => {
                 updateLabelStyle(event.target);
-                saveProgress(); 
+                saveProgress();
             });
         });
     });
 
-    // 9. 마스터 체크박스 변경 시
     if (masterChecklistSection) {
         const masterCheckboxes = masterChecklistSection.querySelectorAll('input[type="checkbox"]');
         masterCheckboxes.forEach(masterCheckbox => {
             masterCheckbox.addEventListener('change', (event) => {
-                const targetSectionId = event.target.id.replace('master_', ''); 
+                const targetSectionId = event.target.id.replace('master_', '');
                 const targetSection = document.getElementById(targetSectionId);
 
                 if (targetSection) {
                     const checkboxesInSection = targetSection.querySelectorAll('input[type="checkbox"]');
                     checkboxesInSection.forEach(cb => {
-                        cb.checked = event.target.checked; 
+                        cb.checked = event.target.checked;
                         updateLabelStyle(cb);
                     });
                 }
-                saveProgress(); 
+                saveProgress();
             });
         });
     }
 
-    // 10. '모든 체크리스트 초기화' 버튼 클릭 시
     clearButton.addEventListener('click', () => {
         const confirmMessage = translations[currentLanguage].confirmReset || "Are you sure you want to reset all checklists?";
         if (confirm(confirmMessage)) {
-            allChecklistSections.forEach(section => { 
+            allChecklistSections.forEach(section => {
                 const checkboxes = section.querySelectorAll('input[type="checkbox"]');
                 checkboxes.forEach(checkbox => {
                     checkbox.checked = false;
                     updateLabelStyle(checkbox);
                 });
             });
-            localStorage.removeItem(checklistProgressStorageKey); 
-            updateAllProgressDisplays(); 
+            localStorage.removeItem(checklistProgressStorageKey);
+            updateAllProgressDisplays();
             const alertMessage = translations[currentLanguage].alertReset || "Checklist has been reset!";
             alert(alertMessage);
         }
     });
 
-    // 11. 언어 선택기 이벤트 리스너
     languageSelector.addEventListener('change', (event) => {
         updateUIText(event.target.value);
     });
 
-    // 페이지가 로드되면 저장된 진행도 및 언어 불러오기
     loadProgress();
 });
